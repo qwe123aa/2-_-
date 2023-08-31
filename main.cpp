@@ -7,14 +7,14 @@ using namespace std;
 using namespace sf;
 
 struct Textures {
-	Texture dino_def;
+	Texture runner_def;
 };
 
-class Dinosaur {
+class Runner {
 public:
-	Sprite dino;
+	Sprite sprite;
 
-	Dinosaur(int speed) : speed_(speed) {
+	Runner(int speed) : speed_(speed) {
 
 	}
 
@@ -23,38 +23,47 @@ private:
 
 };
 
-const int gravity = 5;
+const int gravity = 20;
 
-const int WIDTH = 800;
-const int HEIGHT = 500;
-const int DINO_WIDTH = 200;
-const int DINO_HEIGHT = 200;
+const int WIDTH = 1000;
+const int HEIGHT = 750;
+const int START_X = 170;
+const int START_Y = 350;
 
 int main(void) {
 	RenderWindow window(VideoMode(WIDTH, HEIGHT), "Project");
-	window.setFramerateLimit(30);
-	
-	Textures tex;
-	tex.dino_def.loadFromFile("./resource/dino_def.png");
+	window.setFramerateLimit(60);
+	Clock clock;
 
-	Dinosaur dinosaur = Dinosaur(40);
-	dinosaur.dino.setTexture(tex.dino_def);
-	dinosaur.dino.setPosition(WIDTH/2 - DINO_WIDTH, HEIGHT/2 - 50);
-	dinosaur.dino.setScale(Vector2f(0.5f, 0.5f));
+	//텍스쳐
+	Textures tex;
+	tex.runner_def.loadFromFile("./resource/runner_def.png");
+	
+
+	Runner runner = Runner(40);
+	runner.sprite.setTexture(tex.runner_def);
+	runner.sprite.setPosition(START_X, START_Y);
 	
 	while (window.isOpen()){
 		Event e;
+		float time = clock.getElapsedTime().asSeconds();
+		clock.restart();
+
+		//창닫기
 		while (window.pollEvent(e))
 		{
-			// 윈도우의 x를 눌렀을 때 창이 닫아지도록
 			if (e.type == Event::Closed)
 				window.close();
 		}
 
+		//점프
+		if (Keyboard::isKeyPressed(Keyboard::Space)) {
 
-		window.clear();
+		}
 
-		window.draw(dinosaur.dino);
+		window.clear(Color::White);
+
+		window.draw(runner.sprite);
 
 		window.display();
 	}

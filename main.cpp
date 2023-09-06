@@ -10,6 +10,8 @@ struct Textures {
 	Texture title;
 	Texture btnStart;
 	Texture btnStart_sel;
+
+	Texture background;
 	Texture runner_def;
 	Texture runner_run;
 };
@@ -18,21 +20,12 @@ class Runner {
 public:
 	Sprite sprite;
 
-	Runner(int speed, float run_sit) : speed_(speed), run_sit_(run_sit) {
+	Runner(int speed, float run_sit) : speed_(speed) {
 
-	}
-
-	float getRunSit(void) {
-		return run_sit_;
-	}
-
-	void setRunSit(float run_sit) {
-		run_sit = run_sit_;
 	}
 
 private:
 	int speed_;
-	float run_sit_;
 };
 
 int layer = 0;
@@ -40,22 +33,26 @@ const int gravity = 20;
 
 const int WIDTH = 1000;
 const int HEIGHT = 750;
-const int START_X = 170;
-const int START_Y = 350;
+const int START_X = 130;
+const int START_Y = 310;
 
 int main(void) {
-	RenderWindow window(VideoMode(WIDTH, HEIGHT), "Project");
+	RenderWindow window(VideoMode(WIDTH, HEIGHT), "chrome://human");
 	window.setFramerateLimit(60);
 	Clock clock;
 	Clock walk_timer;
+	Vector2i mouse_pos;
 
 	const Time walk_time = seconds(0.1f);
+	const Time walk_time2 = seconds(0.2f);
 
 	//텍스쳐
 	Textures tex;
 	tex.title.loadFromFile("./resource/background/title.png");
 	tex.btnStart.loadFromFile("./resource/button/btnStart.png");
 	tex.btnStart_sel.loadFromFile("./resource/button/btnStart_sel.png");
+	
+	tex.background.loadFromFile("./resource/background/background.png");
 	tex.runner_def.loadFromFile("./resource/character/runner_def.png");
 	tex.runner_run.loadFromFile("./resource/character/runner_run.png");
 	
@@ -68,6 +65,7 @@ int main(void) {
 		Event e;
 		float time = clock.getElapsedTime().asSeconds();
 		clock.restart();
+		mouse_pos = Mouse::getPosition(window);
 
 		//창닫기
 		while (window.pollEvent(e))
@@ -85,18 +83,28 @@ int main(void) {
 		btnStart.setTexture(tex.btnStart);
 		btnStart.setPosition(WIDTH / 2 - 125, HEIGHT / 2 + 20);
 
-
-		//달리는 모습
-		while (layer == 1) {
-			if (walk_timer.getElapsedTime() > walk_time && runner.getRunSit() == 1) {
-				runner.sprite.setTexture(tex.runner_run);
-				runner.setRunSit(2);
-
-				walk_timer.restart();
+		if (layer == 0) {
+			if (btnStart.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y)) {
+				btnStart.setTexture(tex.btnStart_sel);
+				
+				if (Mouse::isButtonPressed(Mouse::Left)) {
+					layer = 1;
+				}
 			}
-			if (walk_timer.getElapsedTime() > walk_time && runner.getRunSit() == 2) {
+
+		}
+
+		//게임화면
+		Sprite background;
+		background.setTexture(tex.background);
+		background.setPosition(0, 0);
+
+		if (layer == 1) {
+			if (walk_timer.getElapsedTime() > walk_time) {
+				runner.sprite.setTexture(tex.runner_run);
+			}
+			if (walk_timer.getElapsedTime() > walk_time2) {
 				runner.sprite.setTexture(tex.runner_def);
-				runner.setRunSit(1);
 
 				walk_timer.restart();
 			}
@@ -115,6 +123,7 @@ int main(void) {
 		}
 
 		if (layer == 1) {
+			window.draw(background);
 			window.draw(runner.sprite);
 		}
 

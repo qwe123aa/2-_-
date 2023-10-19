@@ -14,14 +14,55 @@ struct Textures {
 	Texture background;
 	Texture runner_def;
 	Texture runner_run;
+
+	Texture hurdle_mini;
+	Texture hurdle_big;
+	Texture hurdle_sky;
 };
 
 class Runner {
 public:
+	Runner(int gravity, int jumping) : gravity_(gravity), jumping_(jumping) {
+
+	}
+
 	Sprite sprite;
 
-	Runner(int speed, float run_sit) : speed_(speed) {
+	int getGravity() {
+		return gravity_;
+	}
 
+	void setGravity(int gravity) {
+		gravity_ = gravity;
+	}
+
+	int getJumping() {
+		return jumping_;
+	}
+
+	void setJumping(int jumping) {
+		jumping_ = jumping;
+	}
+
+private:
+	int gravity_;
+	int jumping_;
+};
+
+class Hurdle {
+public:
+	Sprite sprite;
+
+	Hurdle(int speed) : speed_(speed) {
+
+	}
+
+	int getSpeed() {
+		return speed_;
+	}
+
+	void setSpeed(int speed) {
+		speed_ = speed;
 	}
 
 private:
@@ -29,12 +70,13 @@ private:
 };
 
 int layer = 0;
-const int gravity = 20;
+const int max_speed = 40;
 
 const int WIDTH = 1000;
 const int HEIGHT = 750;
 const int START_X = 130;
 const int START_Y = 310;
+const int Ceiling = START_Y - 200;
 
 int main(void) {
 	RenderWindow window(VideoMode(WIDTH, HEIGHT), "chrome://human");
@@ -56,16 +98,26 @@ int main(void) {
 	tex.runner_def.loadFromFile("./resource/character/runner_def.png");
 	tex.runner_run.loadFromFile("./resource/character/runner_run.png");
 	
+	tex.hurdle_mini.loadFromFile("./resource/hurdle/hurdle_mini.png");
+	tex.hurdle_big.loadFromFile("./resource/hurdle/hurdle_big.png");
+	tex.hurdle_sky.loadFromFile("./resource/hurdle/hurdle_sky.png");
 
-	Runner runner = Runner(40, 1);
+	Runner runner = Runner(30, -55);
 	runner.sprite.setTexture(tex.runner_def);
 	runner.sprite.setPosition(START_X, START_Y);
+
+	Hurdle hurdle_big = Hurdle(20);
+
+
 	
 	while (window.isOpen()){
 		Event e;
 		float time = clock.getElapsedTime().asSeconds();
 		clock.restart();
 		mouse_pos = Mouse::getPosition(window);
+		Vector2f runner_pos = runner.sprite.getPosition();
+		bool onGround = true;
+		bool isJumping = false;
 
 		//Ã¢´Ý±â
 		while (window.pollEvent(e))
@@ -110,9 +162,27 @@ int main(void) {
 			}
 
 			//Á¡ÇÁ
-			if (Keyboard::isKeyPressed(Keyboard::Space)) {
-
+			if (Keyboard::isKeyPressed(Keyboard::Space) && !isJumping) {
+				isJumping = true;
 			}
+
+			if (isJumping == true) {
+				runner.sprite.move(0, runner.getJumping());
+			}
+
+			runner.sprite.move(0,runner.getGravity());
+
+
+			if (runner.sprite.getPosition().y >= START_Y) {
+				runner.sprite.setPosition(runner.sprite.getPosition().x, START_Y);
+				isJumping = false;
+			}
+
+			if (runner.sprite.getPosition().y <= Ceiling) {
+				runner.sprite.setPosition(runner.sprite.getPosition().x, Ceiling);
+				isJumping = false;
+			}
+
 		}
 
 		window.clear();

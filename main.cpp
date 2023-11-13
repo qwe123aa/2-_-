@@ -65,12 +65,17 @@ public:
 		speed_ = speed;
 	}
 
+	void update() {
+		sprite.move(-speed_, 0);
+	}
+
+
 private:
 	int speed_;
 };
 
 int layer = 0;
-const int max_speed = 40;
+const int max_speed = 20;
 
 const int WIDTH = 1000;
 const int HEIGHT = 750;
@@ -102,11 +107,22 @@ int main(void) {
 	tex.hurdle_big.loadFromFile("./resource/hurdle/hurdle_big.png");
 	tex.hurdle_sky.loadFromFile("./resource/hurdle/hurdle_sky.png");
 
-	Runner runner = Runner(30, -55);
+	//선언
+	Runner runner = Runner(25, -50);
 	runner.sprite.setTexture(tex.runner_def);
 	runner.sprite.setPosition(START_X, START_Y);
 
-	Hurdle hurdle_big = Hurdle(20);
+	Hurdle hurdle_big = Hurdle(12);
+	hurdle_big.sprite.setTexture(tex.hurdle_big);
+	hurdle_big.sprite.setPosition(START_X + WIDTH, START_Y+166-140);
+
+	Hurdle hurdle_mini = Hurdle(12);
+	hurdle_mini.sprite.setTexture(tex.hurdle_mini);
+	hurdle_mini.sprite.setPosition(START_X + WIDTH + 600, START_Y+166-69);
+
+	Hurdle hurdle_sky = Hurdle(12);
+	hurdle_sky.sprite.setTexture(tex.hurdle_sky);
+	hurdle_sky.sprite.setPosition(START_X + WIDTH + 1400, Ceiling);
 
 
 	
@@ -151,6 +167,7 @@ int main(void) {
 		background.setTexture(tex.background);
 		background.setPosition(0, 0);
 
+		//플레이중 
 		if (layer == 1) {
 			if (walk_timer.getElapsedTime() > walk_time) {
 				runner.sprite.setTexture(tex.runner_run);
@@ -183,7 +200,21 @@ int main(void) {
 				isJumping = false;
 			}
 
+			//적
+			hurdle_big.update();
+			hurdle_mini.update();
+			hurdle_sky.update();
+
+			if (hurdle_big.sprite.getPosition().x <= -100)
+				hurdle_big.sprite.setPosition(START_X + WIDTH, START_Y + 166 - 140);
+
+			if (hurdle_mini.sprite.getPosition().x <= -100)
+				hurdle_mini.sprite.setPosition(START_X + WIDTH, START_Y + 166 - 69);
+
+			if (hurdle_sky.sprite.getPosition().x <= -100)
+				hurdle_sky.sprite.setPosition(START_X + WIDTH, Ceiling);
 		}
+
 
 		window.clear();
 
@@ -194,6 +225,9 @@ int main(void) {
 
 		if (layer == 1) {
 			window.draw(background);
+			window.draw(hurdle_big.sprite);
+			window.draw(hurdle_mini.sprite);
+			window.draw(hurdle_sky.sprite);
 			window.draw(runner.sprite);
 		}
 

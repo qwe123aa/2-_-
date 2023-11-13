@@ -18,6 +18,9 @@ struct Textures {
 	Texture hurdle_mini;
 	Texture hurdle_big;
 	Texture hurdle_sky;
+
+	Texture gameover;
+	Texture btnRestart;
 };
 
 class Runner {
@@ -106,6 +109,9 @@ int main(void) {
 	tex.hurdle_mini.loadFromFile("./resource/hurdle/hurdle_mini.png");
 	tex.hurdle_big.loadFromFile("./resource/hurdle/hurdle_big.png");
 	tex.hurdle_sky.loadFromFile("./resource/hurdle/hurdle_sky.png");
+
+	tex.gameover.loadFromFile("./resource/background/gameover.png");
+	tex.btnRestart.loadFromFile("./resource/button/btnRestart.png");
 
 	//선언
 	Runner runner = Runner(25, -50);
@@ -226,6 +232,24 @@ int main(void) {
 			}
 		}
 
+		//종료화면
+		Sprite gameover;
+		gameover.setTexture(tex.gameover);
+		gameover.setPosition(0, 0);
+
+		Sprite btnRestart;
+		btnRestart.setTexture(tex.btnRestart);
+		btnRestart.setPosition(600, 575);
+
+		if (layer == 2) {
+			if (btnRestart.getGlobalBounds().contains(mouse_pos.x, mouse_pos.y)) {
+				btnRestart.setTexture(tex.btnStart_sel);
+
+				if (Mouse::isButtonPressed(Mouse::Left)) {
+					layer = 0;
+				}
+			}
+		}
 
 		window.clear();
 
@@ -240,6 +264,11 @@ int main(void) {
 			window.draw(hurdle_mini.sprite);
 			window.draw(hurdle_sky.sprite);
 			window.draw(runner.sprite);
+		}
+
+		if (layer == 2) {
+			window.draw(gameover);
+			window.draw(btnRestart);
 		}
 
 		window.display();

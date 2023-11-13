@@ -213,6 +213,17 @@ int main(void) {
 
 			if (hurdle_sky.sprite.getPosition().x <= -100)
 				hurdle_sky.sprite.setPosition(START_X + WIDTH, Ceiling);
+
+			//충돌처리
+			if ((hurdle_big.sprite.getGlobalBounds()).intersects(runner.sprite.getGlobalBounds())) {
+				layer = 2;
+			}
+			if ((hurdle_mini.sprite.getGlobalBounds()).intersects(runner.sprite.getGlobalBounds())) {
+				layer = 2;
+			}
+			if ((hurdle_sky.sprite.getGlobalBounds()).intersects(runner.sprite.getGlobalBounds())) {
+				layer = 2;
+			}
 		}
 
 
